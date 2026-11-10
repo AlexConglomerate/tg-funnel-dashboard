@@ -1,0 +1,15 @@
+# private, never commit
+.env
+/private
+
+# python / tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# runtime data
+data/
+*.db
