@@ -124,7 +124,7 @@ def build_router(
     router.message.outer_middleware(UserContextMiddleware())
 
     @router.message(CommandStart())
-    async def on_start(message: Message, command: CommandObject) -> None:
+    async def on_start(message: Message, command: CommandObject, bot: Bot) -> None:
         assert message.from_user is not None
         replies = await registration.start(
             tg_id=message.from_user.id,
@@ -133,6 +133,12 @@ def build_router(
             payload=command.args,
         )
         await _answer(message=message, replies=replies, config=config, registration=registration)
+        if message.from_user.id in admin_ids:
+            # При запуске кнопку можно поставить только тем, кто уже писал боту.
+            # Первый /start админа ставит её сразу, без перезапуска.
+            await setup_menu_buttons(
+                bot=bot, admin_ids=frozenset({message.from_user.id}), webapp_url=webapp_url
+            )
 
     @router.message(Command("dashboard"), F.from_user.id.in_(admin_ids))
     async def on_dashboard(message: Message) -> None:
@@ -203,5 +209,5 @@ async def setup_menu_buttons(
         try:
             await bot.set_chat_menu_button(chat_id=admin_id, menu_button=button)
         except TelegramAPIError as exc:
-            # Обычно админ ещё не писал боту: после /start кнопка появится при следующем запуске.
+            # Обычно админ ещё не писал боту: кнопка появится после его /start.
             log.warning("menu_button_failed admin=%s error=%s", admin_id, exc)

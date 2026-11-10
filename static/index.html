@@ -72,6 +72,7 @@
   th { text-align: left; font-weight: 500; color: var(--hint); font-size: 12px; padding: 0 0 6px; }
   td { padding: 7px 0; border-top: 1px solid var(--sep); vertical-align: top; }
   th.r, td.r { text-align: right; padding-left: 8px; }
+  .nowrap { white-space: nowrap; }
   .tag { display: inline-block; background: var(--sep); border-radius: 6px; padding: 0 6px; font-size: 12px; }
 
   .queue { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
@@ -240,7 +241,7 @@
             r.username && r.name ? document.createTextNode(` @${r.username}`) : null,
           ]),
         ]),
-        el("td", { class: "num", text: r.phone_masked || "—" }),
+        el("td", { class: "num nowrap", text: r.phone_masked || "—" }),
         el("td", { class: "r num muted", text: time(r.phone_at || r.started_at, true) }),
       ])),
     ]));
